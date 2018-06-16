@@ -39,7 +39,7 @@ GDA *gp;
 ShowLog(1,"%s:TCB:%d,poolno=%d,tid=%lu",__FUNCTION__,srvp->TCB_no,srvp->poolno,pthread_self());
 			clip=(T_CLI_Var *)gp->server->Var;
 			if(!clip) return;
-			clip->Errno=-1;//瑕佹眰鎸傛柇杩炴帴
+			clip->Errno=-1;//要求挂断连接
 			release_SC_connect(&gp->server,srvp->poolno);
 		}
 	}
@@ -50,14 +50,14 @@ void netinit(T_Connect *conn,T_NetHead *head)
 T_SRV_Var *srvp=(T_SRV_Var *)conn->Var;
 GDA *gp=(GDA *)srvp->var;
 char addr[16],*envp;
-
+	
 	envp=getenv("SENDSIZE");
 	if(envp && isdigit(*envp)) conn->MTU=atoi(envp);
 	envp=getenv("TIMEOUT");
 	if(envp && isdigit(*envp)) srvp->o_timeout=conn->timeout=60*atoi(envp);
 	else srvp->o_timeout=conn->timeout=0;
 	peeraddr(conn->Socket,addr);
-	ShowLog(2,"杩炴帴 %s,TCB:%d,timeout=%d",addr,srvp->TCB_no,conn->timeout);
+	ShowLog(2,"连接 %s,TCB:%d,timeout=%d",addr,srvp->TCB_no,conn->timeout);
 	gp->server=NULL;
 	gp->data=NULL;
 	gp->err_json=NULL;
@@ -71,7 +71,7 @@ int main(int ac,char *av[])
 int i;
 struct rlimit sLimit;
 
-//璁剧疆鍙互core dumpped
+//设置可以core dumpped
 	sLimit.rlim_cur = -1;
 	sLimit.rlim_max = -1;
 	i=setrlimit(RLIMIT_CORE,(const struct rlimit *)&sLimit);

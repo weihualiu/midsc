@@ -25,27 +25,27 @@ log_stu logs;
 	f=Conn->only_do;
 	if(f!=(sdbcfunc)1) set_callback(srvp->TCB_no,f,Conn->timeout);
 	Conn->only_do=NULL;
-        if(event!=EPOLLIN) {
-                ShowLog(1,"%s:å‘¼å«æœåŠ¡å™¨è¿”å›è¶…æ—¶,rs[%d],event=%08X",__FUNCTION__,ret,event);
+        if(event!=EPOLLIN) { 
+                ShowLog(1,"%s:ºô½Ğ·şÎñÆ÷·µ»Ø³¬Ê±,rs[%d],event=%08X",__FUNCTION__,ret,event);
 		unbind_sc(srvp->TCB_no);
 		rs->cli.Errno=-1;
                 release_SC_connect(&Conn,srvp->TCB_no,srvp->poolno);
-		TCB_add(NULL,srvp->TCB_no); //åŠ å…¥åˆ°ä¸»ä»»åŠ¡é˜Ÿåˆ—
+		TCB_add(NULL,srvp->TCB_no); //¼ÓÈëµ½Ö÷ÈÎÎñ¶ÓÁĞ
 		return THREAD_ESCAPE;
         }
 
 	ret=RecvPack(Conn,&Head);
-	if(ret) { //ç½‘ç»œå¤±è´¥
+	if(ret) { //ÍøÂçÊ§°Ü
 		rs->cli.Errno=errno;
 		stptok(strerror(errno),rs->cli.ErrMsg,sizeof(rs->cli.ErrMsg),0);
 		unbind_sc(srvp->TCB_no);
 		ShowLog(1,"%s:network error %d,%s",__FUNCTION__,rs->cli.Errno,rs->cli.ErrMsg);
 		rs->cli.Errno=-1;
 		release_SC_connect(&Conn,srvp->TCB_no,srvp->poolno);
-		TCB_add(NULL,srvp->TCB_no); //åŠ å…¥åˆ°ä¸»ä»»åŠ¡é˜Ÿåˆ—
+		TCB_add(NULL,srvp->TCB_no); //¼ÓÈëµ½Ö÷ÈÎÎñ¶ÓÁĞ
 		return THREAD_ESCAPE;
 	}
-	if(Head.ERRNO1 || Head.ERRNO2) {  //loginå¤±è´¥
+	if(Head.ERRNO1 || Head.ERRNO2) {  //loginÊ§°Ü
 		ShowLog(1,"%s:HOST=%s,login error ERRNO1=%d,ERRNO2=%d,%s",__FUNCTION__,
 			Conn->Host,Head.ERRNO1,Head.ERRNO2,Head.data);
 errret:
@@ -53,7 +53,7 @@ errret:
 		stptok(Head.data,rs->cli.ErrMsg,sizeof(rs->cli.ErrMsg),0);
 		rs->cli.Errno=-1;
 		release_SC_connect(&Conn,srvp->TCB_no,srvp->poolno);
-		TCB_add(NULL,srvp->TCB_no); //åŠ å…¥åˆ°ä¸»ä»»åŠ¡é˜Ÿåˆ—
+		TCB_add(NULL,srvp->TCB_no); //¼ÓÈëµ½Ö÷ÈÎÎñ¶ÓÁĞ
 		return THREAD_ESCAPE;
 	}
 	memset(&logs,0,sizeof(logs));
@@ -63,13 +63,13 @@ errret:
 	if(!*pl->DBLABEL) strcpy(pl->DBLABEL,logs.DBLABEL);
 //session id for end server
 	rs->cli.ctx_id=atoi(logs.DBLABEL);
-
-//å–æœåŠ¡å
+	
+//È¡·şÎñÃû
 	rs->cli.svc_tbl=&pl->svc_tbl;
 	if(pl->svc_tbl.srvn == 0) {
-	    pl->svc_tbl.srvn=-1; //ä¹è§‚é”
+	    pl->svc_tbl.srvn=-1; //ÀÖ¹ÛËø
 	    ret=init_svc_no(&rs->Conn);
-	    if(ret) { //å–æœåŠ¡åå¤±è´¥
+	    if(ret) { //È¡·şÎñÃûÊ§°Ü
 		ShowLog(1,"%s:HOST=%s,init_svc_no error ERRNO1=%d,ERRNO2=%d,%s",__FUNCTION__,
 			Conn->Host,Head.ERRNO1,Head.ERRNO2,Head.data);
 		goto errret;
@@ -87,7 +87,7 @@ errret:
 static int to_log_ret(T_Connect *conn,T_NetHead *head)
 {
 T_SRV_Var *srvp=(T_SRV_Var *)conn->Var;
-//ä»rdyé˜Ÿåˆ—è½¬åˆ°epollé˜Ÿåˆ—
+//´Órdy¶ÓÁĞ×ªµ½epoll¶ÓÁĞ
 	unset_callback(srvp->TCB_no);
 int ret;
 resource *rs;
@@ -100,14 +100,14 @@ pool *pl;
 	}
 	pl=&scpool[srvp->poolno];
 
-	ret=conn->pos;//ä»sc_connectä¼ é€’è¿‡æ¥
+	ret=conn->pos;//´Ósc_connect´«µİ¹ıÀ´
 	rs=&pl->lnk[ret];
-//ä»»åŠ¡å°†å›åˆ°epollé˜Ÿåˆ—
+//ÈÎÎñ½«»Øµ½epoll¶ÓÁĞ 
 	set_event(srvp->TCB_no,rs->Conn.Socket,log_ret,60);
 	return THREAD_ESCAPE;
 }
 
-//è¿æ¥
+//Á¬½Ó
 static int sc_connect(pool *p1,resource *rs)
 {
 int ret=-1;
@@ -140,17 +140,18 @@ char finger[200];
 	Head.PROTO_NUM=0;
 	Head.D_NODE=p1->log.NEXT_d_node;
 	Head.ERRNO1=rs->Conn.MTU;
-	Head.PKG_REC_NUM=-1; //ä¸è¦æ±‚ctx_id
+	Head.PKG_REC_NUM=-1; //²»ÒªÇóctx_id
 	Head.data=buf;
 	Head.PKG_LEN=strlen(Head.data);
 	ret=SendPack(&rs->Conn,&Head);
 ShowLog(5,"%s:Send %s ret%d",__FUNCTION__,Head.data,ret);
-//ä»»åŠ¡å°†å›åˆ°rdyé˜Ÿåˆ—
+//ÈÎÎñ½«»Øµ½rdy¶ÓÁĞ 
 	cli_conn=get_TCB_connect(rs->TCBno);
-	cli_conn->pos=rs->Conn.pos;//å‘ä¸‹ä¼ é€’pos
+	cli_conn->pos=rs->Conn.pos;//ÏòÏÂ´«µİpos
 	rs->Conn.only_do=set_callback(rs->TCBno,to_log_ret,rs->Conn.timeout);
 	if(!rs->Conn.only_do) {
 		rs->Conn.only_do=(sdbcfunc)1;
-	}//æ²¡æœ‰è¿›è¡ŒTCB_add(),å›å»ååšã€‚
+	}//Ã»ÓĞ½øĞĞTCB_add(),»ØÈ¥ºó×ö¡£
 	return 0;
 }
+

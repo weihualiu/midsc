@@ -25,7 +25,7 @@ extern int do_event(int TCB_no,int socket,int flg);
 
 extern unsigned long set_sp(void *new_stack);
 extern char *restore_sp(void *to,void *from,unsigned long bp,unsigned long size);
-//timeout for second
+//timeout for second 
 int RecvNet(int socket,char *buf,int n,int timeout,int TCB_no)
 {
 int bcount=0,br,ret;
@@ -39,7 +39,7 @@ unsigned long begin_stack,save_stack_size=0;
 	fflag=fcntl(socket,F_GETFL,0);
 	if(uc) {
 		tc=uc->uc_link;
-		fcntl(socket,F_SETFL,fflag|O_NONBLOCK); //ÂºÇÊ≠•Êìç‰Ωú
+		fcntl(socket,F_SETFL,fflag|O_NONBLOCK); //“Ï≤Ω≤Ÿ◊˜
 	} else {
 		struct timeval tmout;
 		tmout.tv_sec=timeout;
@@ -67,10 +67,10 @@ unsigned long begin_stack,save_stack_size=0;
 		    break;
 		}
 //ShowLog(5,"RecvNet:read br=0,errno=%d,%s",errno,strerror(errno));
-		if(bcount < n && uc) { //ÂàáÊç¢‰ªªÂä°
+		if(bcount < n && uc) { //«–ªª»ŒŒÒ
 ShowLog(5,"%s:create fiber",__FUNCTION__);
 		      if(!uc->uc_stack.ss_size) {
-//ËÆ°ÁÆóÊâÄÈúÄÁöÑÊ†àÂ∏ß
+//º∆À„À˘–Ëµƒ’ª÷°			
 			swapcontext(uc,uc);
 #if __WORDSIZE == 64
 			begin_stack=tc->uc_mcontext.gregs[REG_RSP];
@@ -81,13 +81,13 @@ ShowLog(5,"%s:create fiber",__FUNCTION__);
 		  		save_stack_size=uc->uc_mcontext.gregs[REG_ESP]-begin_stack;
 			}
 #endif
-			if(save_stack_size > MAX_STACK) save_stack_size=0;
-			if(save_stack_size==0) {	//Â¶ÇÊûúÈúÄË¶Å‰øùÂ≠òÁöÑÊ†àÂ∏ßÂ§™Â§ßÔºåÂ∞±‰∏çË¶ÅÂºÇÊ≠•‰∫Ü
+			if(save_stack_size > MAX_STACK) save_stack_size=0; 
+			if(save_stack_size==0) {	//»Áπ˚–Ë“™±£¥Êµƒ’ª÷°Ã´¥Û£¨æÕ≤ª“™“Ï≤Ω¡À
 				uc=NULL;
 				fcntl(socket,F_SETFL,fflag);
 				continue;
-			}
-//ÂàõÂª∫fiber
+			} 
+//¥¥Ω®fiber
 			uc->uc_stack.ss_size=save_stack_size+2048;
 			uc->uc_stack.ss_sp=malloc(uc->uc_stack.ss_size);
 			if(!uc->uc_stack.ss_sp) {
@@ -96,23 +96,23 @@ ShowLog(5,"%s:create fiber",__FUNCTION__);
 				fcntl(socket,F_SETFL,fflag);
 				continue;
 			}
-//‰øùÂ≠òÁ∫øÁ®ãÊ†àÂ∏ß
+//±£¥Êœﬂ≥Ã’ª÷°
 			memcpy(uc->uc_stack.ss_sp-save_stack_size,(void *)(begin_stack-save_stack_size),save_stack_size);
-//Â∞ÜÂÆûÈôÖÁöÑrsp,rbp‰πüË∞ÉËøáÊù•  ËøôÈúÄË¶Å‰∏ÄÊÆµasm
+//Ω´ µº µƒrsp,rbp“≤µ˜π˝¿¥  ’‚–Ë“™“ª∂Œasm
 			set_sp(uc->uc_stack.ss_sp-save_stack_size);
 		      }
-		        swapcontext(uc,uc);//Âú®do_event‰πãÂâçÔºåËÆæÂÆöÂ•ΩÊ†à
-		        if(tc != uc->uc_link) //do_eventÂêéË¢´Âà´Á∫øÁ®ãÊä¢ÂÖ•‰∫Ü
+		        swapcontext(uc,uc);//‘⁄do_event÷Æ«∞£¨…Ë∂®∫√’ª
+		        if(tc != uc->uc_link) //do_event∫Û±ª±œﬂ≥Ã«¿»Î¡À
 		    	    continue;
 			i=do_event(TCB_no,socket,0);//EPOOLIN
 			swapcontext(uc,uc->uc_link); // thread escape
 		}
 	}
 	if(uc) {
-		if(uc->uc_stack.ss_sp) {// ÈîÄÊØÅfiber
+		if(uc->uc_stack.ss_sp) {// œ˙ªŸfiber
 ShowLog(5,"%s:drop fiber",__FUNCTION__);
-//ÊÅ¢Â§çÁ∫øÁ®ãÊ†àÂ∏ß ÈúÄË¶Å‰∏ÄÁÇπASM
-//Âà∞Êñ∞ÁöÑuc->uc_link.uc_mcontext.gregs[REG_RSP];
+//ª÷∏¥œﬂ≥Ã’ª÷° –Ë“™“ªµ„ASM
+//µΩ–¬µƒuc->uc_link.uc_mcontext.gregs[REG_RSP];
 #if __WORDSIZE == 64
 			memcpy(restore_sp((void *)uc->uc_link->uc_mcontext.gregs[REG_RSP],
 					uc->uc_stack.ss_sp,uc->uc_link->uc_mcontext.gregs[REG_RBP],
@@ -124,7 +124,7 @@ ShowLog(5,"%s:drop fiber",__FUNCTION__);
 					save_stack_size),
 				uc->uc_stack.ss_sp-save_stack_size,save_stack_size);
 #endif
-//ÈúÄË¶ÅÊÅ¢Â§çÂÖ∂‰ªñÂØÑÂ≠òÂô®ÂêóÔºü
+//–Ë“™ª÷∏¥∆‰À˚ºƒ¥Ê∆˜¬£ø
 			free(uc->uc_stack.ss_sp);
 			uc->uc_stack.ss_size=0;
 		}
@@ -147,7 +147,7 @@ unsigned long sp;
 	fflag=fcntl(socket,F_GETFL,0);
 	if(uc) {
 		tc=uc->uc_link;
-		fcntl(socket,F_SETFL,fflag|O_NONBLOCK); //ÂºÇÊ≠•Êìç‰Ωú
+		fcntl(socket,F_SETFL,fflag|O_NONBLOCK); //“Ï≤Ω≤Ÿ◊˜
 	}
 	bcount=0;
 	bw=0;
@@ -161,9 +161,9 @@ unsigned long sp;
 		}
 ShowLog(5,"%s:MTU=%d,bcount=%d,n=%d,bw=%d",__FUNCTION__,MTU,bcount,n,bw);
 		if(bw<0) break;
-		if(bcount < n && uc) { //ÂàáÊç¢‰ªªÂä°
+		if(bcount < n && uc) { //«–ªª»ŒŒÒ
 		    if(!uc->uc_stack.ss_size) {
-//ËÆ°ÁÆóÊâÄÈúÄÁöÑÊ†àÂ∏ß
+//º∆À„À˘–Ëµƒ’ª÷°			
 			swapcontext(uc,uc);
 #if __WORDSIZE == 64
 			begin_stack=tc->uc_mcontext.gregs[REG_RSP];
@@ -174,13 +174,13 @@ ShowLog(5,"%s:MTU=%d,bcount=%d,n=%d,bw=%d",__FUNCTION__,MTU,bcount,n,bw);
 		  		save_stack_size=uc->uc_mcontext.gregs[REG_ESP]-begin_stack;
 			}
 #endif
-			if(save_stack_size > MAX_STACK) save_stack_size=0;
-			if(save_stack_size==0) {	//Â¶ÇÊûúÈúÄË¶Å‰øùÂ≠òÁöÑÊ†àÂ∏ßÂ§™Â§ßÔºåÂ∞±‰∏çË¶ÅÂºÇÊ≠•‰∫Ü
+			if(save_stack_size > MAX_STACK) save_stack_size=0; 
+			if(save_stack_size==0) {	//»Áπ˚–Ë“™±£¥Êµƒ’ª÷°Ã´¥Û£¨æÕ≤ª“™“Ï≤Ω¡À
 				uc=NULL;
 				fcntl(socket,F_SETFL,fflag);
 				continue;
-			}
-//ÂàõÂª∫fiber
+			} 
+//¥¥Ω®fiber
 			uc->uc_stack.ss_size=save_stack_size+4096;
 			uc->uc_stack.ss_sp=malloc(uc->uc_stack.ss_size+16);
 			if(!uc->uc_stack.ss_sp) {
@@ -189,24 +189,24 @@ ShowLog(5,"%s:MTU=%d,bcount=%d,n=%d,bw=%d",__FUNCTION__,MTU,bcount,n,bw);
 				fcntl(socket,F_SETFL,fflag);
 				continue;
 			}
-//‰øùÂ≠òÁ∫øÁ®ãÊ†àÂ∏ß
+//±£¥Êœﬂ≥Ã’ª÷°	
 			memcpy(uc->uc_stack.ss_sp+4096,(void *)(begin_stack-save_stack_size),save_stack_size);
-//Â∞ÜÂÆûÈôÖÁöÑrsp,rbp‰πüË∞ÉËøáÊù•  ËøôÈúÄË¶Å‰∏ÄÊÆµasm
+//Ω´ µº µƒrsp,rbp“≤µ˜π˝¿¥  ’‚–Ë“™“ª∂Œasm
 			sp=set_sp(uc->uc_stack.ss_sp+4096);
 ShowLog(5,"%s:create fiber,save_stack_size=%08lX",__FUNCTION__,save_stack_size);
 		    }
-		    swapcontext(uc,uc);//Âú®do_event‰πãÂâçÔºåËÆæÂÆöÂ•ΩÊ†à
-		    if(tc != uc->uc_link) //do_eventÂêéË¢´Âà´Á∫øÁ®ãÊä¢ÂÖ•‰∫Ü
+		    swapcontext(uc,uc);//‘⁄do_event÷Æ«∞£¨…Ë∂®∫√’ª
+		    if(tc != uc->uc_link) //do_event∫Û±ª±œﬂ≥Ã«¿»Î¡À
 			continue;
 		    i=do_event(TCB_no,socket,1); //do_epoll EPOLLOUT
 		    swapcontext(uc,tc); // thread escape
 		}
 	}
 	if(uc) {
-		if(uc->uc_stack.ss_sp) {// ÈîÄÊØÅfiber
+		if(uc->uc_stack.ss_sp) {// œ˙ªŸfiber
 ShowLog(5,"%s:drop fiber",__FUNCTION__);
-//ÊÅ¢Â§çÁ∫øÁ®ãÊ†àÂ∏ß ÈúÄË¶Å‰∏ÄÁÇπASM
-//Âà∞Êñ∞ÁöÑuc->uc_link.uc_mcontext.gregs[REG_RSP];
+//ª÷∏¥œﬂ≥Ã’ª÷° –Ë“™“ªµ„ASM
+//µΩ–¬µƒuc->uc_link.uc_mcontext.gregs[REG_RSP];
 #if __WORDSIZE == 64
 			restore_sp((void *)uc->uc_link->uc_mcontext.gregs[REG_RSP],
 				uc->uc_stack.ss_sp+uc->uc_stack.ss_size,
@@ -227,3 +227,4 @@ ShowLog(5,"%s:uc=%016lX,new=%016LX",__FUNCTION__,uc,get_uc(TCB_no));
 	}
 	return bcount==0?-1:bcount;
 }
+

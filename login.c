@@ -31,7 +31,7 @@ GDA *gp;
 	StrAddr(NetHead->O_NODE,cliaddr);
 //ShowLog(5,"%s:TCB:%d Client IP Addr=%s,Net_login %s",__FUNCTION__,up->TCB_no,cliaddr,NetHead->data);
 	net_dispack(&logrec,NetHead->data,login_tpl);
-	net_pack(NetHead->data,&logrec,login_tpl);//æ¢å¤data
+	net_pack(NetHead->data,&logrec,login_tpl);//»Ö¸´data
 	strcpy(gp->devid,logrec.DEVID);
 	strcpy(gp->operid,logrec.UID);
 	sprintf(gp->ShowID,"%s:%s:%d",logrec.DEVID,cliaddr,up->TCB_no);
@@ -42,7 +42,7 @@ GDA *gp;
 
 	cp=getenv("KEYFILE");
 	if(!cp||!*cp) {
-		strcpy(tmp1,"ç¼ºå°‘çŽ¯å¢ƒå˜é‡ KEYFILE");
+		strcpy(tmp1,"È±ÉÙ»·¾³±äÁ¿ KEYFILE");
 		NetHead->ERRNO1=-1;
 errret:
 		ShowLog(1,"%s:Error %s",__FUNCTION__,tmp1);
@@ -71,7 +71,7 @@ reopen:
 	key=getdw(crc,&dw);
 	if(!key) {
 		freedw(&dw);
-                sprintf(tmp1,"æ— æ•ˆçš„ DEVID");
+                sprintf(tmp1,"ÎÞÐ§µÄ DEVID");
 		NetHead->ERRNO1=-1;
                 goto errret;
         }
@@ -120,13 +120,13 @@ err1:
 		enigma2_decrypt(&egm,tmp,ret);
 		tmp[ret]=0;
 		if(strcmp(tmp,logrec.CA)) {
-			sprintf(tmp1,"CA é”™è¯¯");
+			sprintf(tmp1,"CA ´íÎó");
 ShowLog(1,"%s:%s CA=%s log=%s len=%d",__FUNCTION__,tmp1,tmp,logrec.CA,ret);
 			NetHead->ERRNO1=-1;
 			goto err1;
 		}
 	}
-    } else {   //æœªæ³¨å†Œå®¢æˆ·ç«¯æ³¨å†Œ
+    } else {   //Î´×¢²á¿Í»§¶Ë×¢²á
 	char *p;
 	char *keyD;
 /* REGISTER label|CA|devfile|CHK_Code| */
@@ -147,11 +147,11 @@ ShowLog(2,"REGISTER %s",logrec.UID);
 		NetHead->ERRNO1=-1;
 		goto err1;
 	}
-	p=stptok(logrec.UID,logrec.DEVID,sizeof(logrec.DEVID),".");//logrec.DEVID=å‡†å¤‡æ³¨å†Œçš„DEVID
+	p=stptok(logrec.UID,logrec.DEVID,sizeof(logrec.DEVID),".");//logrec.DEVID=×¼±¸×¢²áµÄDEVID
 	crc=ssh_crc32((unsigned char *)logrec.DEVID,strlen(logrec.DEVID));
 	keyD=getdw(crc,&dw);
 	if(!keyD) {
-		sprintf(tmp1,"æ³¨å†Œå¤±è´¥,%s:æ²¡æœ‰è¿™ä¸ªè®¾å¤‡ï¼",
+		sprintf(tmp1,"×¢²áÊ§°Ü,%s:Ã»ÓÐÕâ¸öÉè±¸£¡",
 				logrec.DEVID);
 		NetHead->ERRNO1=-1;
 		goto err1;
@@ -167,17 +167,17 @@ ShowLog(5,"REGISTER:%s",tmp);
 		enigma2_decrypt(&egm,tmp,ret);
 		tmp[ret]=0;
 		if(strcmp(tmp,logrec.CA)) {
-			sprintf(tmp1,"æ³¨å†Œå¤±è´¥,%s å·²è¢«æ³¨å†Œ,ä½¿ç”¨ä¸­ã€‚",
+			sprintf(tmp1,"×¢²áÊ§°Ü,%s ÒÑ±»×¢²á,Ê¹ÓÃÖÐ¡£",
 					logrec.DEVID);
 			NetHead->ERRNO1=-1;
 			goto err1;
 		}
 	} else if(errno != 2) {
-		sprintf(tmp1,"CA é”™è¯¯");
+		sprintf(tmp1,"CA ´íÎó");
 		NetHead->ERRNO1=-1;
 		goto err1;
 	}
-/*æŠŠè®¾å¤‡ç‰¹å¾ç å†™å…¥æ–‡ä»¶*/
+/*°ÑÉè±¸ÌØÕ÷ÂëÐ´ÈëÎÄ¼þ*/
 	fd=fopen(tmp,"w");
 	if(fd) {
 	int len=strlen(logrec.CA);
@@ -193,7 +193,7 @@ ShowLog(5,"REGISTER:%s",tmp);
 	sprintf(tmp,"%s/%s",cp,logrec.UID);
 	fd=fopen(tmp,"r");
 	if(!fd) {
-		sprintf(tmp1,"REGISTER æ‰“ä¸å¼€æ–‡ä»¶ %s err=%d,%s",
+		sprintf(tmp1,"REGISTER ´ò²»¿ªÎÄ¼þ %s err=%d,%s",
 					logrec.CA,errno,strerror(errno));
 		goto errret;
 	}
@@ -212,14 +212,14 @@ ShowLog(5,"REGISTER:%s",tmp);
 	NetHead->PKG_REC_NUM=0;
     	SendPack(conn,NetHead);
 	return -1;
-    } //æœªæ³¨å†Œå®¢æˆ·ç«¯æ³¨å†Œå®Œæˆ
+    } //Î´×¢²á¿Í»§¶Ë×¢²áÍê³É
 
 	freedw(&dw);
-	if(NetHead->D_NODE==0) { //è¦æ±‚æœ¬åœ°æœåŠ¡
+	if(NetHead->D_NODE==0) { //ÒªÇó±¾µØ·þÎñ
 		log_stu logret;
 		conn->only_do=NULL;
 		conn->CryptFlg &= ~UNDO_ZIP;
-//éœ€è¦è¿›ä¸€æ­¥çš„ctxè®¤è¯ï¼Ÿ
+//ÐèÒª½øÒ»²½µÄctxÈÏÖ¤£¿
 		strcpy(logret.DEVID,gp->devid);
 		strcpy(logret.UID,gp->operid);
 		*logret.DBUSER=0;
@@ -235,10 +235,10 @@ ShowLog(5,"REGISTER:%s",tmp);
 		ShowLog(2,"%s:DEVID=%s login local succeed!",__FUNCTION__,logret.DEVID);
 		return 1;
 	}
-//é…ç½®ç›®æ ‡è·¯ç”±
+//ÅäÖÃÄ¿±êÂ·ÓÉ
 	up->poolno=get_scpool_no(NetHead->D_NODE);
 	if(up->poolno<0) {
-		sprintf(tmp1,"éžæ³•çš„D_NODE %d",NetHead->D_NODE);
+		sprintf(tmp1,"·Ç·¨µÄD_NODE %d",NetHead->D_NODE);
 		NetHead->ERRNO1=-1;
 		goto errret;
 	}
@@ -251,7 +251,7 @@ ShowLog(5,"REGISTER:%s",tmp);
 	ret=scpool_MGR(up->TCB_no,up->poolno,&gp->server,login_finish);
 	if(ret==0) return login_finish(conn,NetHead);
 	else if(ret==1) return THREAD_ESCAPE;
-	sprintf(tmp1,"è¿žæŽ¥æœåŠ¡å™¨å¤±è´¥!");
+	sprintf(tmp1,"Á¬½Ó·þÎñÆ÷Ê§°Ü!");
 	NetHead->ERRNO1=PACK_NOANSER;
 	goto errret;
 }
@@ -267,11 +267,11 @@ T_CLI_Var *clip;
 
 	ret=get_event_status(up->TCB_no);
         if(-2==clr_event(up->TCB_no)) {
-                 ShowLog(1,"%s:TCB:%d err æ¸…é™¤äº‹ä»¶é”™!",__FUNCTION__,up->TCB_no);
+                 ShowLog(1,"%s:TCB:%d err Çå³ýÊÂ¼þ´í!",__FUNCTION__,up->TCB_no);
         }
-        if(ret!=EPOLLIN) {
+        if(ret!=EPOLLIN) { 
                 int efd=get_event_fd(up->TCB_no);
-                sprintf(tmp1,"å‘¼å«æœåŠ¡å™¨%s/%sè¿”å›žè¶…æ—¶,event=0X%08X,fd=%d",
+                sprintf(tmp1,"ºô½Ð·þÎñÆ÷%s/%s·µ»Ø³¬Ê±,event=0X%08X,fd=%d",
                         gp->server->Host,gp->server->Service,ret,efd);
                 goto err2;
         }
@@ -331,10 +331,10 @@ log_stu logret;
 	*tmp=0;
 	uz = (conn->CryptFlg & gp->server->CryptFlg) & DO_ZIP;
 	clip=(T_CLI_Var *)gp->server->Var;
-//è¿›è¡Œåº”ç”¨çº§è®¤è¯
+//½øÐÐÓ¦ÓÃ¼¶ÈÏÖ¤	
 	NetHead->PROTO_NUM=get_srv_no(clip,"ctx_login_svc");
 	if(NetHead->PROTO_NUM > 1 && NetHead->PKG_REC_NUM!=-1) {
-//å¼‚æ­¥
+//Òì²½
 	  	int i=set_event(up->TCB_no,gp->server->Socket,login_end,60);
         	if(i) {
            		sprintf(tmp1,"TCB:%d set_event error %d",
@@ -352,9 +352,9 @@ log_stu logret;
 		if(ret==-1) {
 			ShowLog(1,"%s:Send to server error",__FUNCTION__);
 		}
-        	return THREAD_ESCAPE;//é‡Šæ”¾æœ¬çº¿ç¨‹
+        	return THREAD_ESCAPE;//ÊÍ·Å±¾Ïß³Ì
 	}
-//ä¸è°‹æ±‚ctx_id
+//²»Ä±Çóctx_id
 	release_SC_connect(&gp->server,up->poolno);
 	strcpy(logret.DEVID,gp->devid);
 	strcpy(logret.UID,gp->operid);
@@ -372,3 +372,4 @@ log_stu logret;
         ShowLog(2,"%s:%s Login success",__FUNCTION__,tmp1);
 	return 1;
 }
+

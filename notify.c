@@ -118,7 +118,7 @@ T_Connect *conn,*sconn;
 		Head.ERRNO1=ret;
 		Head.ERRNO2=0;
 		return_error(sconn,&Head,json_object_to_json_string(json));
-		if(!busy) TCB_add(NULL,TCB_no);//å¯èƒ½notifyé‚£è¾¹è¿˜æ²¡å®Œï¼Œå°±é‡å…¥äº†ã€‚
+		if(!busy) TCB_add(NULL,TCB_no);//¿ÉÄÜnotifyÄÇ±ß»¹Ã»Íê£¬¾ÍÖØÈëÁË¡£
 		json_object_put(json);
 	}
 	return 0;
@@ -197,7 +197,7 @@ err1:
 		head->ERRNO1=-2;
 		goto err1;
 	}
-	pathnum=getPathNum(poolno);//è¿™ä¸ªdnodeæœ‰å¤šå°‘ä¸ªæœåŠ¡å™¨
+	pathnum=getPathNum(poolno);//Õâ¸ödnodeÓĞ¶àÉÙ¸ö·şÎñÆ÷
 	if(pathnum < 1) {
 		json_object_array_add(gp->err_json,jerr(-5,"pathnum empty!"));
 		head->ERRNO1=-5;
@@ -225,7 +225,7 @@ err1:
 		rs=get_path_resource(poolno,i,1);
 		if(!rs||rs==(resource *)-1) continue;
 		ShowLog(5,"%s:connect[%d] got!",__FUNCTION__,i);
-//å»ºç«‹contextï¼Œå‘¼å«è¯¥èŠ‚ç‚¹
+//½¨Á¢context£¬ºô½Ğ¸Ã½Úµã
 		rs->Conn.CryptFlg &= ~UNDO_ZIP;
 		clip=&rs->cli;
 		Head.PROTO_NUM=get_srv_no(clip,Rpc);
@@ -236,7 +236,7 @@ err1:
 			continue;
 		}
 ShowLog(5,"%s:Rpc=%s,PROTO_NUM=%d",__FUNCTION__,Rpc,Head.PROTO_NUM);
-		Head.D_NODE=0;  //ä¸ç”¨
+		Head.D_NODE=0;  //²»ÓÃ
 		Head.ERRNO1=0;
 		Head.ERRNO2=stat;
 		Head.PKG_REC_NUM=0;
@@ -246,7 +246,7 @@ ShowLog(5,"%s:Rpc=%s,PROTO_NUM=%d",__FUNCTION__,Rpc,Head.PROTO_NUM);
 		Head.ERRNO1=SendPack(&rs->Conn,&Head);
 		if(!Head.ERRNO1&&stat != PACK_NOANSER) {
 			ShowLog(5,"%s:notify[%d] sended!",__FUNCTION__,i);
-			rs->Conn.timeout=60; //è¶…æ—¶
+			rs->Conn.timeout=60; //³¬Ê±
 			rs->timeout_deal=myrs_timeout;
 			ctxp=(dlq_node *)malloc(sizeof(dlq_node));
 			if(!ctxp) {
@@ -267,7 +267,7 @@ ShowLog(5,"%s:Rpc=%s,PROTO_NUM=%d",__FUNCTION__,Rpc,Head.PROTO_NUM);
 			task_tree=BB_Tree_Add(task_tree,ctxp,sizeof(dlq_node),not_cmp,not_dup);
 			pthread_rwlock_unlock(&treelock);
 
-			clip->var=ctxp;//ç™»è®°å‘èµ·è€…çš„context
+			clip->var=ctxp;//µÇ¼Ç·¢ÆğÕßµÄcontext
 			ret=to_epoll(ctxp,EPOLL_CTL_ADD,0);
 			flg++;
 		}

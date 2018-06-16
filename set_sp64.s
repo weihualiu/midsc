@@ -1,65 +1,65 @@
-.file	"set_sp.c"
-.text
-.p2align 4,,15
+	.file	"set_sp.c"
+	.text
+	.p2align 4,,15
 /*************************************************
-* char * set_sp(char *last_fiber_stack)
-* last_fiber_stack  -> %rdi
-************************************************/
+ * char * set_sp(char *last_fiber_stack)
+ * last_fiber_stack  -> %rdi
+ ************************************************/
 
 .globl set_sp
-.type	set_sp, @function
+	.type	set_sp, @function
 set_sp:
 .LFB0:
-.cfi_startproc
-//ä¿å­˜è¿”å€
-movq	(%rsp),%rax
-movq	%rax,-8(%rdi)
-//è®¡ç®—rbpä¸rspçš„è·ç¦»
-movq	%rbp,%rax
-subq	%rsp,%rax
-//è®¾å®šspåˆ°fiberæ ˆ
-movq	%rdi,%rbp
-subq	$8,%rbp
-movq	%rbp,%rsp
-//æ–°çš„rbpï¼Œè·ç¦»rspä¸åŸæ¥ç›¸åŒ
-addq	%rax,%rbp
-movq	%rdi, %rax
-ret
-.cfi_endproc
+	.cfi_startproc
+//±£´æ·µÖ·
+	movq	(%rsp),%rax
+	movq	%rax,-8(%rdi)
+//¼ÆËãrbpÓërspµÄ¾àÀë
+	movq	%rbp,%rax
+	subq	%rsp,%rax
+//Éè¶¨spµ½fiberÕ»
+	movq	%rdi,%rbp
+	subq	$8,%rbp
+	movq	%rbp,%rsp
+//ĞÂµÄrbp£¬¾àÀërspÓëÔ­À´ÏàÍ¬
+	addq	%rax,%rbp
+	movq	%rdi, %rax
+	ret
+	.cfi_endproc
 .LFE0:
-.size	set_sp, .-set_sp
-.p2align 4,,15
+	.size	set_sp, .-set_sp
+	.p2align 4,,15
 .globl restore_sp
 /***********************************************************************
-* char *restore_sp(char *to,char *from,unsigned long BP,unsigned ling size)
-* to -> %rdi,from -> %rsi, BP->%rdx(ä¸ç”¨),size->%rcx
-* to,å°±æ˜¯åœ¨åŒä¸€ä¸ªçº¿ç¨‹ï¼Œè°ƒåº¦å™¨åº•éƒ¨ï¼Œå°±æ˜¯åº”ç”¨çš„æ ˆé¡¶ã€‚
-************************************************************************/
-.type	restore_sp, @function
+ * char *restore_sp(char *to,char *from,unsigned long BP,unsigned ling size)
+ * to -> %rdi,from -> %rsi, BP->%rdx(²»ÓÃ),size->%rcx
+ * to,¾ÍÊÇÔÚÍ¬Ò»¸öÏß³Ì£¬µ÷¶ÈÆ÷µ×²¿£¬¾ÍÊÇÓ¦ÓÃµÄÕ»¶¥¡£
+ ************************************************************************/
+	.type	restore_sp, @function
 restore_sp:
 .LFB1:
-.cfi_startproc
-//æŒ‰8å­—èŠ‚åå‘æ‹·è´æ•°æ®
-subq	$8,%rdi
-subq	$8,%rsi
-shrq	$3,%rcx
-std
-rep	movsq
-//%rdiåº”è¯¥æ˜¯åœ¨æœ€åå•å…ƒä¹‹å
-cld
-movq	%rdi,%rax
-//è¿”å€è®¾å®š
-movq	(%rsp),%rbx
-movq	%rbx,(%rdi)
-//è®¾å®šrbp
-subq	%rsp,%rbp
-addq	%rdi,%rbp
-//rspè®¾å®šåˆ°æ–°ä½ç½®
-movq	%rdi,%rsp
-//è¿”å›æ ˆåº•
-ret
-.cfi_endproc
+	.cfi_startproc
+//°´8×Ö½Ú·´Ïò¿½±´Êı¾İ
+	subq	$8,%rdi
+	subq	$8,%rsi
+	shrq	$3,%rcx
+	std
+	rep	movsq
+//%rdiÓ¦¸ÃÊÇÔÚ×îºóµ¥ÔªÖ®ºó
+	cld
+	movq	%rdi,%rax
+//·µÖ·Éè¶¨
+	movq	(%rsp),%rbx
+	movq	%rbx,(%rdi)
+//Éè¶¨rbp
+	subq	%rsp,%rbp
+	addq	%rdi,%rbp
+//rspÉè¶¨µ½ĞÂÎ»ÖÃ
+	movq	%rdi,%rsp
+//·µ»ØÕ»µ×
+	ret
+	.cfi_endproc
 .LFE1:
-.size	restore_sp, .-restore_sp
-.ident	"GCC: (GNU) 4.4.7 20120313 (Red Hat 4.4.7-3)"
-.section	.note.GNU-stack,"",@progbits
+	.size	restore_sp, .-restore_sp
+	.ident	"GCC: (GNU) 4.4.7 20120313 (Red Hat 4.4.7-3)"
+	.section	.note.GNU-stack,"",@progbits

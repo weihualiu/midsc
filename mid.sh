@@ -1,8 +1,8 @@
 #!/bin/sh
-# SDBC äº¤æ˜“ç®¡ç†å™¨ é…ç½®
+# SDBC ½»Ò×¹ÜÀíÆ÷ ÅäÖÃ
 # uasge: nohup mid.sh &
-# æ£€æŸ¥ $HOME/etc/mid.cfg $HOME/etc/route.txt è·¯ç”±è¡¨é…ç½®æ˜¯å¦æ­£ç¡®
-# è‡ªåŠ¨é‡å¯çš„ä¸æ­»é¸Ÿ
+# ¼ì²é $HOME/etc/mid.cfg $HOME/etc/route.txt Â·ÓÉ±íÅäÖÃÊÇ·ñÕıÈ·
+# ×Ô¶¯ÖØÆôµÄ²»ËÀÄñ
 while true
 do
 	midsc $HOME/etc/mid.cfg
